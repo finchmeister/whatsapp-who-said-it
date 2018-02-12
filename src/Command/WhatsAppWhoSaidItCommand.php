@@ -39,20 +39,33 @@ class WhatsAppWhoSaidItCommand extends Command
             return;
         }
 
-        $helper = $this->getHelper('question');
-        $question = new ChoiceQuestion(
-            'Select a chat:',
-            $options,
-            0
-        );
-        $question->setErrorMessage('Option %s is invalid.');
-        $filename = $helper->ask($input, $output, $question);
-        $output->writeln('You have just selected: '.$filename);
+        if (count($options) > 1) {
+            $helper = $this->getHelper('question');
+            $question = new ChoiceQuestion(
+                'Select a chat:',
+                $options,
+                0
+            );
+            $question->setErrorMessage('Option %s is invalid.');
+            $filename = $helper->ask($input, $output, $question);
+            $output->writeln('You have just selected: '.$filename);
+        } else {
+            $filename = $options[0];
+        }
 
-        $chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$filename);
-
+        $this->chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$filename);
+        $matches = $this->getChatParticipants();
+        print_r(array_unique($matches));
     }
 
+
+
+
+    protected function getChatParticipants()
+    {
+        preg_match_all('/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2} - (.+?):/', $this->chat, $matches);
+        return $matches[1];
+    }
 
 
     protected function getWhatsAppExportDirectory()
