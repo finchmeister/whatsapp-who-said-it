@@ -47,16 +47,23 @@ class WhatsAppWhoSaidItCommand extends Command
                 0
             );
             $question->setErrorMessage('Option %s is invalid.');
-            $filename = $helper->ask($input, $output, $question);
-            $output->writeln('You have just selected: '.$filename);
+            $this->filename = $helper->ask($input, $output, $question);
+            $output->writeln('You have just selected: '.$this->filename);
         } else {
-            $filename = $options[0];
+            $this->filename = $options[0];
         }
 
-        $this->chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$filename);
+        $this->chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$this->filename);
         $parsedExport = $this->parseWhatsAppExport();
+        //$users = array_unique(array_column($parsedExport, 'user'));
+
+        // TODO, create chat alias if does not exist
+        $this->userAlias = $this->getChatAlias();
+
         $noOfMessages = count($parsedExport);
         $io->text(sprintf("%s messages", $noOfMessages));
+
+
         $random = mt_rand(0, $noOfMessages-1);
         $message = $parsedExport[$random];
         $io->text($message['message']);
@@ -64,19 +71,45 @@ class WhatsAppWhoSaidItCommand extends Command
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
             'Who said it?:',
-            array_values($this->chatParticipants),
+            array_keys($this->userAlias[$this->filename]),
             0
         );
 
         $guess = $helper->ask($input, $output, $question);
         $output->writeln('You have just selected: '.$guess);
 
-        if ($guess === $message['user']) {
+        $trueUser = $this->getTrueUser($message['user']);
+        if ($guess === $trueUser) {
             $io->success("Correct!");
         } else {
-            $io->error("You suck, it was ".$message['user']);
+            $io->error("You suck, it was ".$trueUser);
         }
 
+    }
+
+    protected function getTrueUser($user)
+    {
+        foreach ($this->userAlias[$this->filename] as $trueUser => $aliases) {
+            if ($user === $trueUser) {
+                return $user;
+            }
+            if (in_array(trim($user), array_map('trim', $aliases))) {
+                return $trueUser;
+            }
+        }
+        throw new \RuntimeException("No user found '$user'");
+    }
+
+    protected function putChatAlias(array $chatAlias = null)
+    {
+        file_put_contents($this->getWhatsAppAliasFilename(), json_encode(
+            $chatAlias
+        ));
+    }
+
+    protected function getChatAlias()
+    {
+        return json_decode(file_get_contents($this->getWhatsAppAliasFilename()), true);
     }
 
     protected function getMessageString($key, $matches)
@@ -89,7 +122,10 @@ class WhatsAppWhoSaidItCommand extends Command
         );
     }
 
-    protected function parseWhatsAppExport()
+    /**
+     * @return array
+     */
+    protected function parseWhatsAppExport(): array
     {
         $append = date('d/m/Y, H:i'); // A bit hacky but makes the positive look ahead work for the final message
         preg_match_all(
@@ -109,7 +145,16 @@ Messages: %s",
                     count($matches[1]))
             );
         }
-        $this->chatParticipants = array_unique($matches[2]);
+        return $this->transformParsedExport($matches);
+    }
+
+    /**
+     * Transform the preg_match_all return
+     * @param $matches
+     * @return array
+     */
+    protected function transformParsedExport(array $matches)
+    {
         $parsedExport = [];
         foreach ($matches[1] as $i => $timestamp) {
             $parsedExport[$i] = [
@@ -121,14 +166,17 @@ Messages: %s",
         return $parsedExport;
     }
 
-    protected function getChatParticipants($matches)
+    protected function getChatParticipants($allParticipants)
     {
-        return array_unique($matches);
+        return array_unique($allParticipants);
     }
-
 
     protected function getWhatsAppExportDirectory()
     {
         return __DIR__.'/../../var/whatsapp-export';
+    }
+    protected function getWhatsAppAliasFilename()
+    {
+        return __DIR__.'/../../var/alias/aliases.json';
     }
 }
