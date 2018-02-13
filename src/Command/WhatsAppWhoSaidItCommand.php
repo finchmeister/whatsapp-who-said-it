@@ -54,10 +54,29 @@ class WhatsAppWhoSaidItCommand extends Command
         }
 
         $this->chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$filename);
-        $matches = $this->parseWhatsAppExport();
-        $io->text(sprintf("%s messages", count($matches[1])));
-        $io->text($this->getMessageString(count($matches[1])-1, $matches));
-        print_r($this->getChatParticipants($matches[2]));
+        $parsedExport = $this->parseWhatsAppExport();
+        $noOfMessages = count($parsedExport);
+        $io->text(sprintf("%s messages", $noOfMessages));
+        $random = mt_rand(0, $noOfMessages-1);
+        $message = $parsedExport[$random];
+        $io->text($message['message']);
+
+        $helper = $this->getHelper('question');
+        $question = new ChoiceQuestion(
+            'Who said it?:',
+            array_values($this->chatParticipants),
+            0
+        );
+
+        $guess = $helper->ask($input, $output, $question);
+        $output->writeln('You have just selected: '.$guess);
+
+        if ($guess === $message['user']) {
+            $io->success("Correct!");
+        } else {
+            $io->error("You suck, it was ".$message['user']);
+        }
+
     }
 
     protected function getMessageString($key, $matches)
@@ -78,7 +97,28 @@ class WhatsAppWhoSaidItCommand extends Command
             $this->chat.$append,
             $matches
         );
-        return $matches;
+        if (count($matches[1]) !== count($matches[2]) || count($matches[2]) !== count($matches[3])) {
+            throw new \RuntimeException(
+                sprintf(
+                    "There was an error parsing the WhatsApp text file:
+Timestamps: %s;
+User strings: %s;
+Messages: %s",
+                    count($matches[1]),
+                    count($matches[2]),
+                    count($matches[1]))
+            );
+        }
+        $this->chatParticipants = array_unique($matches[2]);
+        $parsedExport = [];
+        foreach ($matches[1] as $i => $timestamp) {
+            $parsedExport[$i] = [
+                'timestamp' => $timestamp,
+                'user' => $matches[2][$i],
+                'message' => $matches[3][$i],
+            ];
+        }
+        return $parsedExport;
     }
 
     protected function getChatParticipants($matches)
