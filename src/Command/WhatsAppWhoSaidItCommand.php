@@ -89,15 +89,23 @@ class WhatsAppWhoSaidItCommand extends Command
 
     protected function getTrueUser($user)
     {
+        $user = self::trim($user);
         foreach ($this->userAlias[$this->filename] as $trueUser => $aliases) {
             if ($user === $trueUser) {
                 return $user;
             }
-            if (in_array(trim($user), array_map('trim', $aliases))) {
+            // TODO, remove weird characters before
+            if (in_array($user, array_map(WhatsAppWhoSaidItCommand::class.'::trim', $aliases))) {
                 return $trueUser;
             }
         }
         throw new \RuntimeException("No user found '$user'");
+    }
+
+    protected static function trim(string $string)
+    {
+        $string = str_replace("\u202a", "", $string);
+        return trim($string, urldecode("%E2%80%AC")); // Weird character encodings
     }
 
     protected function putChatAlias(array $chatAlias = null)
