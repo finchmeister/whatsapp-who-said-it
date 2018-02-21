@@ -15,6 +15,12 @@ use Symfony\Component\Finder\SplFileInfo;
 class WhatsAppWhoSaidItCommand extends Command
 {
 
+    const NO_OF_QUESTIONS = 5;
+
+    private $parsedExport;
+    /** @var SymfonyStyle */
+    private $io;
+
     protected function configure()
     {
         $this->setName('app:who-said-it');
@@ -22,8 +28,8 @@ class WhatsAppWhoSaidItCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-        $io->title("WhatsApp Who Said It");
+        $this->io = new SymfonyStyle($input, $output);
+        $this->io->title("WhatsApp Who Said It");
 
         $finder = new Finder();
         $finder->files()->in($this->getWhatsAppExportDirectory())->name('*.txt');
@@ -35,7 +41,7 @@ class WhatsAppWhoSaidItCommand extends Command
             $options[] = $file->getFileName();
         }
         if ($options === []) {
-            $io->error("No text file export found in /var/whatsapp-export");
+            $this->io->error("No text file export found in /var/whatsapp-export");
             return;
         }
 
@@ -54,19 +60,48 @@ class WhatsAppWhoSaidItCommand extends Command
         }
 
         $this->chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$this->filename);
-        $parsedExport = $this->parseWhatsAppExport();
+        $this->parsedExport = $this->parseWhatsAppExport();
         //$users = array_unique(array_column($parsedExport, 'user'));
 
         // TODO, create chat alias if does not exist
         $this->userAlias = $this->getChatAlias();
 
-        $noOfMessages = count($parsedExport);
-        $io->text(sprintf("%s messages", $noOfMessages));
+        $this->io->section($this->filename);
+        $this->io->text(sprintf("%s messages", $this->getNoOfMessages()));
 
+        $this->correct = 0;
+        $this->questionCounter = 1;
+        for ($i = 0; $i < self::NO_OF_QUESTIONS; $i++) {
+            $result = $this->askQuestion($input, $output);
+            if ($result) {
+                $this->correct++;
+            }
+        }
+        $this->io->section(sprintf(
+            "Results: %s/%s - %s%%",
+            $this->correct,
+            self::NO_OF_QUESTIONS,
+            round($this->correct/self::NO_OF_QUESTIONS * 100)
+        ));
+    }
 
-        $random = mt_rand(0, $noOfMessages-1);
-        $message = $parsedExport[$random];
-        $io->text($message['message']);
+    protected function getNoOfMessages(): int
+    {
+        return count($this->parsedExport);
+    }
+
+    protected function askQuestion(InputInterface $input, OutputInterface $output)
+    {
+        $this->io->section(sprintf(
+            "Question %s of %s              Score %s/%s",
+            $this->questionCounter,
+            self::NO_OF_QUESTIONS,
+            $this->correct,
+            self::NO_OF_QUESTIONS
+        ));
+        $random = mt_rand(0, $this->getNoOfMessages()-1);
+        $message = $this->parsedExport[$random];
+        $this->io->text($message['message']);
 
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
@@ -76,15 +111,17 @@ class WhatsAppWhoSaidItCommand extends Command
         );
 
         $guess = $helper->ask($input, $output, $question);
-        $output->writeln('You have just selected: '.$guess);
+        $this->io->text('You have just selected: '.$guess);
 
+        $this->questionCounter++;
         $trueUser = $this->getTrueUser($message['user']);
         if ($guess === $trueUser) {
-            $io->success("Correct!");
+            $this->io->success("Correct!");
+            return true;
         } else {
-            $io->error("You suck, it was ".$trueUser);
+            $this->io->error("You suck, it was ".$trueUser);
+            return false;
         }
-
     }
 
     protected function getTrueUser($user)
@@ -104,7 +141,9 @@ class WhatsAppWhoSaidItCommand extends Command
 
     protected static function trim(string $string)
     {
+        // TODO, more robustness, potentially whitelist characters instead
         $string = str_replace("\u202a", "", $string);
+        $string = str_replace(urldecode("%EF%BF%BD"), "", $string);
         return trim($string, urldecode("%E2%80%AC")); // Weird character encodings
     }
 
