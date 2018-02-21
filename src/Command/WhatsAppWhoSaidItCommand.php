@@ -61,10 +61,17 @@ class WhatsAppWhoSaidItCommand extends Command
 
         $this->chat = file_get_contents($this->getWhatsAppExportDirectory().'/'.$this->filename);
         $this->parsedExport = $this->parseWhatsAppExport();
-        //$users = array_unique(array_column($parsedExport, 'user'));
 
-        // TODO, create chat alias if does not exist
         $this->userAlias = $this->getChatAlias();
+
+        if (isset($this->userAlias[$this->filename]) === false) {
+            $users = array_unique(array_column($this->parsedExport, 'user'));
+            foreach ($users as $user) {
+                $this->userAlias[$this->filename][$user] = [];
+            }
+            $this->putChatAlias($this->userAlias);
+            // TODO, then manually update json
+        }
 
         $this->io->section($this->filename);
         $this->io->text(sprintf("%s messages", $this->getNoOfMessages()));
