@@ -1,0 +1,8 @@
+{
+    "require": {
+        "symfony/website-skeleton": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {"WhatsAppWhoSaidIt\\": "src/"}
+    }
+}
