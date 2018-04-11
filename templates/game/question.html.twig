@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="question mt-5 text-center">
+            <div class="row">
+                <div class="col-sm">
+                    <h1>Question {{ current_question_no }}<small class="text-muted">/{{ no_of_questions }}</small></h1>
+                    <h2 class="h4 py-3">Who Said:</h2>
+
+                    <blockquote class="blockquote py-3 mb-0">
+                        <p>{{ question }}</p>
+                        <!--<footer class="blockquote-footer">Name</footer>-->
+                    </blockquote>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="answers">
+            <div class="row">
+                <div class="col-sm-6 py-2">
+                    <button type="button" class="btn btn-primary btn-lg btn-block">Jo</button>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <button type="button" class="btn btn-primary btn-lg btn-block">Rolfe</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 py-2">
+                    <button type="button" class="btn btn-primary btn-lg btn-block">Ollie</button>
+                </div>
+                <div class="col-sm-6 py-2">
+                    <button type="button" class="btn btn-primary btn-lg btn-block">Charles</button>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-6 py-2">
+                    <button type="button" class="btn btn-primary btn-lg btn-block">Luke</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="score text-center">
+            <div class="row">
+                <div class="col-sm">
+                    <p class="py-3">{{ score }} out of {{ no_of_questions }}</p>
+
+                    <!--<button type="button" class="btn btn-light btn-lg btn-block">Next</button>-->
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
