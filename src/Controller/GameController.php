@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Game\QuestionType;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -13,10 +14,22 @@ class GameController extends Controller
      */
     public function index()
     {
+        $chatsAvailable = [1 => 'Diop', 2 => 'The Gambling Club'];
+
         return $this->render('game/index.html.twig', [
-            'controller_name' => 'GameController',
+            'chats_available' => $chatsAvailable
         ]);
     }
+
+
+    /**
+     * @Route("/new/{chatId}", name="new_game")
+     */
+    public function selectChat()
+    {
+        return new Response("Diop");
+    }
+
 
     /**
      * @Route("/question")

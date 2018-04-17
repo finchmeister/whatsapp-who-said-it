@@ -14,13 +14,13 @@ class GameRunner
         $this->context = $context;
     }
 
-    public function loadGame()
+    public function loadGame(GameContextInterface $gameContext)
     {
         if ($game = $this->context->loadGame()) {
             return $game;
         }
 
-        $game = $this->context->newGame();
+        $game = $this->context->newGame($gameContext);
         $this->context->save($game);
 
         return $game;
