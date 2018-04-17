@@ -19,36 +19,29 @@
         </div>
 
         <div class="answers">
-            <div class="row">
-                <div class="col-sm-6 py-2">
-                    <button type="button" class="btn btn-primary btn-lg btn-block">Jo</button>
-                </div>
-                <div class="col-sm-6 py-2">
-                    <button type="button" class="btn btn-primary btn-lg btn-block">Rolfe</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6 py-2">
-                    <button type="button" class="btn btn-primary btn-lg btn-block">Ollie</button>
-                </div>
-                <div class="col-sm-6 py-2">
-                    <button type="button" class="btn btn-primary btn-lg btn-block">Charles</button>
-                </div>
 
-            </div>
-            <div class="row">
-                <div class="col-sm-6 py-2">
-                    <button type="button" class="btn btn-primary btn-lg btn-block">Luke</button>
-                </div>
-            </div>
+            {{ form_start(answer_form) }}
+
+            {% for button in answer_form %}
+                {% if loop.index0 % 2 == 0 %}
+                    <div class="row">
+                {% endif %}
+                        <div class="col-sm-6 py-2">
+                            {{ form_widget(button, {'attr': {'class': 'btn btn-primary btn-lg btn-block'}}) }}
+                        </div>
+                {% if loop.index0 % 2 == 1 %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {{ form_end(answer_form) }}
+
         </div>
 
         <div class="score text-center">
             <div class="row">
                 <div class="col-sm">
                     <p class="py-3">{{ score }} out of {{ no_of_questions }}</p>
-
-                    <!--<button type="button" class="btn btn-light btn-lg btn-block">Next</button>-->
 
                 </div>
             </div>

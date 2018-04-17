@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Game\QuestionType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class GameController extends Controller
@@ -34,16 +34,40 @@ class GameController extends Controller
     /**
      * @Route("/question")
      */
-    public function question()
+    public function question(Request $request)
     {
-        $answerForm = $this->createForm(QuestionType::class);
+        // get game
+
+
+        $answers = ['Jo', 'Jay', 'Charles', 'Luke', 'Rolfe'];
+        $options['answers'] = $answers;
+        $answerForm = $this->createForm(
+            QuestionType::class,
+            $answers,
+            $options
+        );
+        $answerForm->handleRequest($request);
+
+        if ($answerForm->isSubmitted() && $answerForm->isValid()) {
+            $submittedAnswer = null;
+            foreach ($answers as $answer) {
+                if ($answerForm->has($answer)) {
+                    if ($answerForm->get($answer)->isClicked()) {
+                        $submittedAnswer = $answer;
+                        break;
+                    }
+                }
+            }
+            dump($submittedAnswer);
+        }
+
 
         return $this->render('game/question.html.twig', [
             'question' => 'Who put a tenner in?',
             'no_of_questions' => 10,
             'current_question_no' => 4,
             'score' => 2,
-            'answer_form' => $answerForm,
+            'answer_form' => $answerForm->createView(),
         ]);
     }
 
