@@ -16,17 +16,16 @@ interface GameContextInterface
     public function reset(): void;
 
     /**
-     * @param GameContextInterface $context
+     * @param GameConfigInterface $context
      * @return Game
      */
-    public function newGame(GameContextInterface $context): Game;
+    public function newGame(GameConfigInterface $context): Game;
 
     /**
-     * Loads an existing game.
-     *
-     * @return Game
+     * @param GameConfigInterface $context
+     * @return Game|null
      */
-    public function loadGame(): Game;
+    public function loadGame(GameConfigInterface $context): ?Game;
 
     /**
      * Saves the provided game.

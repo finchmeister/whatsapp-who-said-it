@@ -9,5 +9,7 @@ namespace App\Game;
  */
 interface GameConfigInterface
 {
+    public function getChat();
 
+    public function getGameMode();
 }

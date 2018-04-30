@@ -14,9 +14,9 @@ class GameRunner
         $this->context = $context;
     }
 
-    public function loadGame(GameContextInterface $gameContext)
+    public function loadGame(GameConfigInterface $gameContext)
     {
-        if ($game = $this->context->loadGame()) {
+        if ($game = $this->context->loadGame($gameContext)) {
             return $game;
         }
 

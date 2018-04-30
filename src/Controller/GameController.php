@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Game\GameRunner;
+use App\Game\GameConfigWhoSaidIt;
 use App\Game\QuestionType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
 class GameController extends Controller
 {
@@ -23,22 +26,24 @@ class GameController extends Controller
 
 
     /**
-     * @Route("/new/{chatId}", name="new_game")
+     * @Route("/chat/{chatId}/game", requirements={"chatId"="\d+"}, name="play_game")
      */
-    public function selectChat()
+    public function playGame(int $chatId, GameRunner $gameRunner)
     {
+        $gameConfig = new GameConfigWhoSaidIt();
+        $game = $gameRunner->loadGame($gameConfig);
+
         return new Response("Diop");
     }
 
     /**
-     * @Route("/chat/{chatId}", name="chat_home")
+     * @Route("/chat/{chatId}", requirements={"chatId"="\d+"}, name="chat_home")
      */
     public function chatHome()
     {
         return $this->render('game/chat-home.html.twig', [
         ]);
     }
-
 
     /**
      * @Route("/question")
