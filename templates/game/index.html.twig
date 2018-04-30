@@ -16,7 +16,7 @@
             <div class="col">
                 <h2>Select Chat</h2>
                 {% for id, chat in chats_available %}
-                    <a class="btn btn-primary" href="{{ path('new_game', {'chatId' : id }) }}" role="button">{{ chat }}</a>
+                    <a class="btn btn-primary" href="{{ path('chat_home', {'chatId' : id }) }}" role="button">{{ chat }}</a>
                 {% endfor %}
             </div>
         </div>

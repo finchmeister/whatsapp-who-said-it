@@ -30,6 +30,15 @@ class GameController extends Controller
         return new Response("Diop");
     }
 
+    /**
+     * @Route("/chat/{chatId}", name="chat_home")
+     */
+    public function chatHome()
+    {
+        return $this->render('game/chat-home.html.twig', [
+        ]);
+    }
+
 
     /**
      * @Route("/question")
