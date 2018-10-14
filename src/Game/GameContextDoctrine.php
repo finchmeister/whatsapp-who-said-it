@@ -2,6 +2,7 @@
 
 
 namespace App\Game;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class GameContextDoctrine
@@ -9,6 +10,18 @@ namespace App\Game;
  */
 class GameContextDoctrine implements GameContextInterface
 {
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    public function __construct(
+        EntityManagerInterface $em
+    ) {
+        $this->em = $em;
+    }
+
     public function reset(): void
     {
         // TODO: Implement reset() method.

@@ -69,7 +69,7 @@ class Question
         return $this;
     }
 
-    public function isAnswerCorrect()
+    public function isAnswerCorrect(): bool
     {
         return $this->getAnswer() === $this->getUserAnswer();
     }

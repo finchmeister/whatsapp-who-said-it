@@ -6,6 +6,18 @@ namespace App\Game;
 
 class GameConfigWhoSaidIt implements GameConfigInterface
 {
+    public const WHO_SAID_IT = 'who_said_it';
+
+    public function getId()
+    {
+        // TODO: Implement getId() method.
+    }
+
+
+    public function getUser()
+    {
+        // TODO: Implement getUser() method.
+    }
 
 
     public function getChat()
@@ -14,9 +26,9 @@ class GameConfigWhoSaidIt implements GameConfigInterface
         // TODO: Implement getChat() method.
     }
 
-    public function getGameMode()
+    public function getGameMode(): string
     {
-        // TODO: Implement getGameMode() method.
+        return self::WHO_SAID_IT;
     }
 
 }

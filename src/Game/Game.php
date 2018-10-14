@@ -4,6 +4,7 @@
 namespace App\Game;
 
 use Doctrine\Common\Collections\Collection;
+use Webmozart\Assert\Assert;
 
 class Game
 {
@@ -17,18 +18,11 @@ class Game
      */
     protected $currentQuestionNo = 1;
 
-    public function __construct()
-    {
-    }
-
-    /**
-     * @param Question[]|Collection $questions
-     * @return Game
-     */
-    public function setQuestions(Collection $questions): Game
-    {
+    public function __construct(
+        Collection $questions
+    ) {
+        Assert::allIsInstanceOf($questions, Question::class);
         $this->questions = $questions;
-        return $this;
     }
 
     public function getCurrentQuestionNo(): int
@@ -36,19 +30,8 @@ class Game
         return $this->currentQuestionNo;
     }
 
-    public function getCurrentQuestion(): Question
+    public function setCurrentQuestionNo(int $currentQuestionNo): void
     {
-        return $this->questions->get($this->getCurrentQuestionNo());
+        $this->currentQuestionNo = $currentQuestionNo;
     }
-
-    public function getScore(): int
-    {
-
-    }
-
-    public function restartGame()
-    {
-        $this->currentQuestionNo = 1;
-    }
-
 }
