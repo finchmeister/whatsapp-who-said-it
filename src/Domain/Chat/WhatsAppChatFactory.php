@@ -8,9 +8,8 @@ class WhatsAppChatFactory
         string $name,
         array $parsedChat
     ): WhatsAppChat {
-        $whatsAppChat = new WhatsAppChat($name);
-
         $messages = [];
+
         foreach ($parsedChat[1] as $i => $timestamp) {
             $message = new WhatsAppChatMessage();
             $message
@@ -20,8 +19,7 @@ class WhatsAppChatFactory
             ;
             $messages[] = $message;
         }
-        $whatsAppChat->setMessages($messages);
 
-        return $whatsAppChat;
+        return new WhatsAppChat($name, $messages);
     }
 }

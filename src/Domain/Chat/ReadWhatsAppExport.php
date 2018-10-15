@@ -1,32 +1,31 @@
 <?php
 
-namespace App\Game;
+namespace App\Domain\Chat;
 
 class ReadWhatsAppExport
 {
 
+    /**
+     * @var ChatDataProviderInterface
+     */
+    private $chatDataProvider;
+
     public function __construct(
-
-    )
-    {
+        ChatDataProviderInterface $chatDataProvider
+    ) {
+        $this->chatDataProvider = $chatDataProvider;
     }
 
-    public function createGame()
+    public function loadChat(string $chatIdentifier)
     {
-        // Read chat
-
-        // Select random questions
-
-        // Store ids in db
 
     }
-
 
     public function getChatFile(string $fileName)
     {
-        return file_get_contents($fileName);
+        $chatFile = $this->chatDataProvider->read($fileName);
+        return $this->parseWhatsAppExport($chatFile);
     }
-
 
     protected function parseWhatsAppExport(string $chatFile): array
     {
@@ -36,7 +35,8 @@ class ReadWhatsAppExport
             $chatFile.$append,
             $matches
         );
-        if (count($matches[1]) !== count($matches[2]) || count($matches[2]) !== count($matches[3])) {
+        if (\count($matches[1]) !== \count($matches[2])
+            || \count($matches[2]) !== \count($matches[3])) {
             throw new \RuntimeException(
                 sprintf(
                     "There was an error parsing the WhatsApp text file:
