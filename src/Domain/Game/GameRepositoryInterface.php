@@ -2,13 +2,13 @@
 
 namespace App\Domain\Game;
 
-use App\Domain\Chat\WhatsAppChat;
-use App\Domain\Player\Player;
 use App\Game\Game;
 
 interface GameRepositoryInterface
 {
-    public function findByPlayerAndChat(Player $player, WhatsAppChat $chat): ?Game;
+    public function get(GameId $gameId): ?Game;
 
-    public function saveGame(Game $game): void;
+    public function getNextGameId(): GameId;
+
+    public function save(Game $game): void;
 }

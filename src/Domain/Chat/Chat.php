@@ -2,11 +2,11 @@
 
 namespace App\Domain\Chat;
 
-use Ramsey\Uuid\Uuid;
+use App\Domain\Common\Id;
 
-class WhatsAppChat
+class Chat
 {
-    /** @var string */
+    /** @var ChatId */
     private $id;
     /** @var string */
     private $name;
@@ -14,25 +14,20 @@ class WhatsAppChat
     private $messages;
 
     public function __construct(
+        ChatId $id,
         string $name,
         array $messages
     ) {
-        $this->id = Uuid::uuid4()->toString();
+        $this->id = $id;
         $this->name = $name;
         $this->messages = $messages;
     }
 
-    /**
-     * @return string
-     */
-    public function getId(): string
+    public function getId(): ChatId
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;

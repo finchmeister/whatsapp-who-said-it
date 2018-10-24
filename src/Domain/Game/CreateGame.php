@@ -4,7 +4,7 @@
 namespace App\Domain\Game;
 
 
-use App\Domain\Chat\WhatsAppChat;
+use App\Domain\Chat\Chat;
 use App\Domain\Player\Player;
 use App\Game\Game;
 
@@ -12,7 +12,7 @@ class CreateGame
 {
     public function createNewGame(
         Player $player,
-        WhatsAppChat $chat
+        Chat $chat
     ): Game {
 
     }

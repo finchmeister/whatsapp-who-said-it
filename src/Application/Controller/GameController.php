@@ -2,6 +2,7 @@
 
 namespace App\Application\Controller;
 
+use App\Application\Game\CreateNewGameService;
 use App\Game\GameRunner;
 use App\Game\GameConfigWhoSaidIt;
 use App\Game\QuestionType;
@@ -17,6 +18,11 @@ class GameController extends Controller
      */
     public function index()
     {
+
+        if (getenv('APP_ENV') === 'prod') {
+            return new Response('Under Construction');
+        }
+
         $chatsAvailable = [1 => 'Diop', 2 => 'The Gambling Club'];
 
         return $this->render('game/index.html.twig', [
@@ -24,6 +30,14 @@ class GameController extends Controller
         ]);
     }
 
+    public function createGame(CreateNewGameService $gameService)
+    {
+        $player = '';
+        $chat = '';
+
+        $gameService->createGame($chat, $player);
+
+    }
 
     /**
      * @Route("/chat/{chatId}/game", requirements={"chatId"="\d+"}, name="play_game")

@@ -2,15 +2,14 @@
 
 namespace App\Domain\Game;
 
-use App\Domain\Chat\WhatsAppChat;
+use App\Domain\Chat\Chat;
 use App\Domain\Player\Player;
-use Ramsey\Uuid\Uuid;
 
 class GameService
 {
     public const NO_OF_QUESTIONS = 10;
 
-    public function createGame(WhatsAppChat $chat, Player $player): Game
+    public function createGame(Chat $chat, Player $player): Game
     {
         $messages = $chat->getMessages();
         $questions = [];

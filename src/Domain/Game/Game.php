@@ -2,31 +2,31 @@
 
 namespace App\Domain\Game;
 
-use App\Domain\Chat\WhatsAppChat;
+use App\Domain\Chat\Chat;
 use App\Domain\Player\Player;
 use Assert\Assertion;
-use Ramsey\Uuid\Uuid;
 
 class Game
 {
-    /** @var string */
+    /** @var GameId */
     private $id;
     /** @var Question[] */
     private $questions;
     /** @var Player */
     private $player;
-    /** @var WhatsAppChat */
+    /** @var Chat */
     private $chat;
 
     /**
      * Game constructor.
+     * @param GameId $gameId
      * @param Question[] $questions
      * @param Player $player
-     * @param WhatsAppChat $chat
+     * @param Chat $chat
      */
-    public function __construct(array $questions, Player $player, WhatsAppChat $chat)
+    public function __construct(GameId $gameId, array $questions, Player $player, Chat $chat)
     {
-        $this->id = Uuid::uuid4()->toString();
+        $this->id = $gameId;
         Assertion::allIsInstanceOf($questions, Question::class);
         $this->questions = $questions;
         $this->player = $player;
@@ -34,34 +34,31 @@ class Game
     }
 
     /**
-     * @return string
+     * @return GameId
      */
-    public function getId(): string
+    public function getId(): GameId
     {
         return $this->id;
     }
 
-    /**
-     * @return Question[]
-     */
-    public function getQuestions(): array
-    {
-        return $this->questions;
-    }
-
-    /**
-     * @return Player
-     */
     public function getPlayer(): Player
     {
         return $this->player;
     }
 
-    /**
-     * @return WhatsAppChat
-     */
-    public function getChat(): WhatsAppChat
+    public function getChat(): Chat
     {
         return $this->chat;
+    }
+
+    public function getCurrentQuestion(): Question
+    {
+
+    }
+
+    public function provideAnswer(Answer $answer)
+    {
+
+        // Get current question
     }
 }

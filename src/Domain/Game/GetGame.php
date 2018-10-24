@@ -2,7 +2,7 @@
 
 namespace App\Domain\Game;
 
-use App\Domain\Chat\WhatsAppChat;
+use App\Domain\Chat\Chat;
 use App\Domain\Player\Player;
 use App\Game\Game;
 
@@ -25,7 +25,7 @@ class GetGame
         $this->createGame = $createGame;
     }
 
-    public function getPlayersGame(Player $player, WhatsAppChat $chat): Game
+    public function getPlayersGame(Player $player, Chat $chat): Game
     {
         $game = $this->gameRepository->findByPlayerAndChat(
             $player,

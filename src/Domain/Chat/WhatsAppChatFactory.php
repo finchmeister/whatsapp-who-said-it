@@ -7,7 +7,7 @@ class WhatsAppChatFactory
     public static function createFromParsedChat(
         string $name,
         array $parsedChat
-    ): WhatsAppChat {
+    ): Chat {
         $messages = [];
 
         foreach ($parsedChat[1] as $i => $timestamp) {
@@ -20,6 +20,6 @@ class WhatsAppChatFactory
             $messages[] = $message;
         }
 
-        return new WhatsAppChat($name, $messages);
+        return new Chat($name, $messages);
     }
 }

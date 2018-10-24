@@ -3,33 +3,36 @@
 namespace App\Domain\Game;
 
 use App\Domain\Chat\WhatsAppChatMessage;
-use Ramsey\Uuid\Uuid;
+use App\Domain\Common\Id;
 
 class Question
 {
-    /** @var string */
+    /** @var QuestionId */
     private $id;
     /** @var string */
     private $question;
-    /** @var string */
+    /** @var Answer */
     private $answer;
     /** @var WhatsAppChatMessage */
     private $whatsAppChatMessage;
     // TODO: consider metadata
 
+    private $providedAnswer;
+
     public function __construct(
+        QuestionId $id,
         WhatsAppChatMessage $message
     ) {
-        $this->id = Uuid::uuid4()->toString();
+        $this->id = $id;
         $this->question = $message->getMessage();
         $this->answer = $message->getUserName();
         $this->whatsAppChatMessage = $message;
     }
 
     /**
-     * @return string
+     * @return QuestionId
      */
-    public function getId(): string
+    public function getId(): QuestionId
     {
         return $this->id;
     }
@@ -56,5 +59,11 @@ class Question
     public function getWhatsAppChatMessage(): WhatsAppChatMessage
     {
         return $this->whatsAppChatMessage;
+    }
+
+    /** Todo */
+    public function setProvidedAnswer($providedAnswer)
+    {
+        $this->providedAnswer = $providedAnswer;
     }
 }
