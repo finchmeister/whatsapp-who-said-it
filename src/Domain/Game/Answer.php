@@ -2,39 +2,22 @@
 
 namespace App\Domain\Game;
 
-use App\Domain\Player\Player;
+use Assert\Assertion;
 
 class Answer
 {
-    /** @var Question */
-    private $question;
-    /** @var Player */
-    private $answer;
-    /** @var Game */
-    private $game;
+    /** @var string */
+    private $answerText;
 
     public function __construct(
-        Question $question,
-        Answer $answer,
-        Game $game
+        string $answer
     ) {
-        $this->question = $question;
-        $this->answer = $answer;
-        $this->game = $game;
+        Assertion::notBlank($answer);
+        $this->answerText = $answer;
     }
 
-    public function getQuestion(): Question
+    public function getAnswerText(): string
     {
-        return $this->question;
-    }
-
-    public function getAnswer(): Player
-    {
-        return $this->answer;
-    }
-
-    public function getGame(): Game
-    {
-        return $this->game;
+        return $this->answerText;
     }
 }

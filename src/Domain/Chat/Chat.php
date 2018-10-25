@@ -2,7 +2,7 @@
 
 namespace App\Domain\Chat;
 
-use App\Domain\Common\Id;
+use Assert\Assertion;
 
 class Chat
 {
@@ -12,15 +12,22 @@ class Chat
     private $name;
     /** @var WhatsAppChatMessage[] */
     private $messages;
+    /** @var Participant[] */
+    private $participants;
 
     public function __construct(
         ChatId $id,
         string $name,
-        array $messages
+        array $messages,
+        array $participants
     ) {
         $this->id = $id;
+        Assertion::notBlank($name);
         $this->name = $name;
+        Assertion::allIsInstanceOf($messages, WhatsAppChatMessage::class);
         $this->messages = $messages;
+        Assertion::allIsInstanceOf($participants, Participant::class);
+        $this->participants = $participants;
     }
 
     public function getId(): ChatId
@@ -39,5 +46,13 @@ class Chat
     public function getMessages(): array
     {
         return $this->messages;
+    }
+
+    /**
+     * @return Participant[]
+     */
+    public function getParticipants(): array
+    {
+        return $this->participants;
     }
 }

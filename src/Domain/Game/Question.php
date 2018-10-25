@@ -2,68 +2,94 @@
 
 namespace App\Domain\Game;
 
-use App\Domain\Chat\WhatsAppChatMessage;
-use App\Domain\Common\Id;
+use Assert\Assertion;
 
 class Question
 {
     /** @var QuestionId */
     private $id;
     /** @var string */
-    private $question;
+    private $questionText;
     /** @var Answer */
     private $answer;
-    /** @var WhatsAppChatMessage */
-    private $whatsAppChatMessage;
+    /** @var Game */
+    private $game;
     // TODO: consider metadata
 
-    private $providedAnswer;
+    private $submittedAnswerText;
+    /** @var Answer[] */
+    private $answers;
 
     public function __construct(
         QuestionId $id,
-        WhatsAppChatMessage $message
+        Game $game,
+        string $questionText,
+        array $answers,
+        Answer $answer
     ) {
         $this->id = $id;
-        $this->question = $message->getMessage();
-        $this->answer = $message->getUserName();
-        $this->whatsAppChatMessage = $message;
+        $this->questionText = $questionText;
+        Assertion::allIsInstanceOf($answers, Answer::class);
+        $this->answers = $answers;
+        $this->answer = $answer;
+        $this->game = $game;
     }
 
-    /**
-     * @return QuestionId
-     */
     public function getId(): QuestionId
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getQuestion(): string
+    public function getGame(): Game
     {
-        return $this->question;
+        return $this->game;
     }
 
-    /**
-     * @return string
-     */
-    public function getAnswer(): string
+    public function getQuestionText(): string
+    {
+        return $this->questionText;
+    }
+
+    public function getAnswer(): Answer
     {
         return $this->answer;
     }
 
-    /**
-     * @return WhatsAppChatMessage
-     */
-    public function getWhatsAppChatMessage(): WhatsAppChatMessage
+    public function getAnswerText(): string
     {
-        return $this->whatsAppChatMessage;
+        return $this->answer->getAnswerText();
     }
 
-    /** Todo */
-    public function setProvidedAnswer($providedAnswer)
+    /**
+     * @return Answer[]
+     */
+    public function getAnswers(): array
     {
-        $this->providedAnswer = $providedAnswer;
+        return $this->answers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnswersText(): array
+    {
+        return array_map(function (Answer $answer) {
+            return $answer->getAnswerText();
+        }, $this->getAnswers());
+    }
+
+    public function submitAnswer(Answer $answer): void
+    {
+        $this->submittedAnswerText = $answer->getAnswerText();
+    }
+
+    public function getSubmittedAnswerText(): ?string
+    {
+        return $this->submittedAnswerText;
+    }
+
+    public function isAnswerCorrect(): bool
+    {
+        return $this->getAnswerText() === $this->submittedAnswerText;
     }
 }
