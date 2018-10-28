@@ -3,6 +3,8 @@
 namespace App\Application\Controller;
 
 use App\Application\Game\CreateNewGameService;
+use App\Application\Game\GameService;
+use App\Domain\Chat\ChatId;
 use App\Game\GameRunner;
 use App\Game\GameConfigWhoSaidIt;
 use App\Game\QuestionType;
@@ -10,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Router;
 
 class GameController extends Controller
 {
@@ -30,32 +33,72 @@ class GameController extends Controller
         ]);
     }
 
-    public function createGame(CreateNewGameService $gameService)
-    {
-        $player = '';
-        $chat = '';
-
-        $gameService->createGame($chat, $player);
-
-    }
-
     /**
-     * @Route("/chat/{chatId}/game", requirements={"chatId"="\d+"}, name="play_game")
+     * @Route("/chat/{chatId}", name="chat_home")
      */
-    public function playGame(int $chatId, GameRunner $gameRunner)
+    public function chatHome(string $chatId)
     {
-        $gameConfig = new GameConfigWhoSaidIt();
-        $game = $gameRunner->loadGame($gameConfig);
+        // Get stats etc
 
-        return new Response("Diop");
-    }
+        $newGameUrl = $this->generateUrl('play_game', ['chatId' => $chatId, 'new' => 'true']);
 
-    /**
-     * @Route("/chat/{chatId}", requirements={"chatId"="\d+"}, name="chat_home")
-     */
-    public function chatHome()
-    {
         return $this->render('game/chat-home.html.twig', [
+            'chat_id' => $chatId,
+            'new_game_url' => $newGameUrl,
+        ]);
+    }
+
+    /**
+     * @Route("/chat/{chatUuid}/play", name="play_game")
+     */
+    public function playGame(
+        Request $request,
+        string $chatUuid,
+        CreateNewGameService $createNewGameService,
+        GameService $gameService
+    ) {
+        $player = $this->getUser();
+        $chatId = ChatId::fromString($chatUuid);
+        $isNew = $request->get('new', false);
+        if ($isNew) {
+            // chat service
+            $game = $createNewGameService->createNewGame($chatId);
+        } else {
+            // Find game from chatid and player id
+            $game = $gameService->getGame();
+        }
+
+        // create new game
+
+        $answers = ['Jo', 'Jay', 'Charles', 'Luke', 'Rolfe'];
+        $options['answers'] = $answers;
+        $answerForm = $this->createForm(
+            QuestionType::class,
+            $answers,
+            $options
+        );
+        $answerForm->handleRequest($request);
+
+        if ($answerForm->isSubmitted() && $answerForm->isValid()) {
+            $submittedAnswer = null;
+            foreach ($answers as $answer) {
+                if ($answerForm->has($answer)) {
+                    if ($answerForm->get($answer)->isClicked()) {
+                        $submittedAnswer = $answer;
+                        break;
+                    }
+                }
+            }
+            dump($submittedAnswer);
+        }
+
+
+        return $this->render('game/question.html.twig', [
+            'question' => 'Who put a tenner in?',
+            'no_of_questions' => 10,
+            'current_question_no' => 4,
+            'score' => 2,
+            'answer_form' => $answerForm->createView(),
         ]);
     }
 

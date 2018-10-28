@@ -22,7 +22,7 @@ class Question
 
     public function __construct(
         QuestionId $id,
-        Game $game,
+//        Game $game,
         string $questionText,
         array $answers,
         Answer $answer
@@ -32,7 +32,7 @@ class Question
         Assertion::allIsInstanceOf($answers, Answer::class);
         $this->answers = $answers;
         $this->answer = $answer;
-        $this->game = $game;
+//        $this->game = $game;
     }
 
     public function getId(): QuestionId

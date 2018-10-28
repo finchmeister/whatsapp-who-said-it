@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\App\Tests\Spec\Application\Game;
+namespace spec\App\Application\Game;
 
 use App\Application\Game\CreateNewGameService;
 use App\Domain\Chat\ChatRepositoryInterface;

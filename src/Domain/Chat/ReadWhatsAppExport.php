@@ -39,13 +39,13 @@ class ReadWhatsAppExport
             || \count($matches[2]) !== \count($matches[3])) {
             throw new \RuntimeException(
                 sprintf(
-                    "There was an error parsing the WhatsApp text file:
+                    'There was an error parsing the WhatsApp text file:
 Timestamps: %s;
 User strings: %s;
-Messages: %s",
+Messages: %s',
                     \count($matches[1]),
                     \count($matches[2]),
-                    \count($matches[1])
+                    \count($matches[3])
                 )
             );
         }

@@ -9,12 +9,12 @@ use Ramsey\Uuid\UuidInterface;
 class Id
 {
     /**
-     * @param string $aGameId
+     * @param string $aId
      * @return Id
      */
-    public static function fromString(string $aGameId): Id
+    public static function fromString(string $aId): Id
     {
-        return new self(Uuid::fromString($aGameId));
+        return new self(Uuid::fromString($aId));
     }
 
     public static function generate(): Id

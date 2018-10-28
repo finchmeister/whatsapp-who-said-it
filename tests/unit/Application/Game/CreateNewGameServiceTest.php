@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Unit\Application\Game;
+namespace unit\App\Application\Game\CreateNewGameService;
 
 use App\Application\Game\CreateNewGameService;
 use PHPUnit\Framework\TestCase;

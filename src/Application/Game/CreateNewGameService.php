@@ -8,7 +8,6 @@ use App\Domain\Chat\MessageFilter\MessageFilterInterface;
 use App\Domain\Chat\Participant;
 use App\Domain\Game\Answer;
 use App\Domain\Game\Game;
-use App\Domain\Game\GameId;
 use App\Domain\Game\GameRepositoryInterface;
 use App\Domain\Game\Question;
 use App\Domain\Game\QuestionRepositoryInterface;
@@ -48,10 +47,10 @@ class CreateNewGameService
      * Implementation tbd
      * @param $chat
      * @param $player
-     * @return GameId
+     * @return Game
      * @throws \Exception
      */
-    public function createNewGame(ChatId $chatId, $player, array $params = []): GameId
+    public function createNewGame(ChatId $chatId, $player, array $params = []): Game
     {
         // TODO consider source of params
         $params = array_merge([
@@ -86,11 +85,12 @@ class CreateNewGameService
 
                 $question = new Question(
                     $this->questionRepository->getNextQuestionId(),
-                    $game,
+//                    $game,
                     $randomMessage->getMessage(),
                     $answers,
                     new Answer($randomMessage->getUserName())
                 );
+
                 $game->addQuestion($question);
                 $i++;
             }
@@ -98,7 +98,7 @@ class CreateNewGameService
 
         $this->gameRepository->save($game);
 
-        return $gameId;
+        return $game;
     }
 
     private function isDuplicate(int $index, array $usedIndices): bool
